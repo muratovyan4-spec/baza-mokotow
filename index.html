@@ -75,6 +75,7 @@
      SECTION 01 — HERO
      ========================================================================== -->
 <section class="hero" id="top">
+  <div class="hero-flash" aria-hidden="true"></div>
   <div class="hero-scene" aria-hidden="true">
     <div class="hero-scene__grid" data-parallax data-parallax-strength="8"></div>
     <div class="hero-scene__glow-wrap" data-parallax data-parallax-strength="16">
@@ -171,8 +172,17 @@
     </div>
 
     <div class="hero-visual__hud" data-parallax data-parallax-strength="36">
-      <span class="hud-chip"><span class="hud-chip__dot"></span>SYSTEM · ONLINE</span>
-      <span class="hud-chip">BAZA://MOKOTÓW</span>
+      <div class="hero-glass-card" data-glass-card>
+        <span class="hero-glass-card__row">
+          <span class="hud-chip__dot"></span>
+          System online
+        </span>
+        <span class="hero-glass-card__divider" aria-hidden="true"></span>
+        <span class="hero-glass-card__row">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.06 6.6.72-4.9 4.6 1.28 6.55L12 17.9 6.12 20.4 7.4 13.9l-4.9-4.6 6.6-.72L12 2.5Z"/></svg>
+          <span class="hero-glass-card__value">4.7</span> / 5
+        </span>
+      </div>
     </div>
   </div>
 

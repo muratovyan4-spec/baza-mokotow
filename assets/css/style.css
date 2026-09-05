@@ -249,11 +249,22 @@ h1, h2, h3, .font-display {
   color: var(--text-on-yellow);
   box-shadow: 0 0 0 0 rgba(var(--yellow-rgb), 0.5);
 }
-.btn-primary:hover {
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--yellow-400);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.5s var(--ease-out);
+}
+
+.btn-primary:hover {
   box-shadow: 0 8px 30px -8px rgba(var(--yellow-rgb), 0.65);
   transform: translateY(-2px);
 }
+.btn-primary:hover::before { clip-path: inset(0 0 0 0); }
 
 .btn-secondary {
   background: transparent;
@@ -493,6 +504,17 @@ h1, h2, h3, .font-display {
     linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 80% 60% at 65% 40%, black 10%, transparent 75%);
+  filter: blur(1.5px);
+}
+
+/* Brief "power-on" flash punctuating the very start of the hero entrance */
+.hero-flash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 68% 38%, rgba(var(--yellow-rgb), 0.85), rgba(var(--yellow-rgb), 0.15) 40%, transparent 70%);
 }
 
 .hero-scene__glow-wrap {
@@ -572,6 +594,7 @@ h1, h2, h3, .font-display {
 .hero-title {
   font-size: clamp(2.75rem, 1.9rem + 5.5vw, 6.75rem);
   letter-spacing: 0;
+  perspective: 800px;
 }
 
 .hero-title .line {
@@ -582,6 +605,7 @@ h1, h2, h3, .font-display {
 
 .hero-title .word {
   display: inline-block;
+  transform-origin: bottom center;
   will-change: transform, opacity, filter;
 }
 
@@ -691,6 +715,7 @@ h1, h2, h3, .font-display {
   height: 112%;
   z-index: -2;
   pointer-events: none;
+  perspective: 1400px;
   display: none;
 }
 
@@ -704,6 +729,7 @@ h1, h2, h3, .font-display {
   height: 100%;
   clip-path: circle(0% at 68% 38%);
   transform: scale(1.12);
+  transform-style: preserve-3d;
   will-change: clip-path, transform;
 }
 
@@ -739,27 +765,62 @@ h1, h2, h3, .font-display {
   position: absolute;
   left: 6%;
   bottom: 10%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
 }
 
-.hud-chip {
+/* Liquid-glass floating status card: frosted material, soft inner highlight,
+   gentle idle float. Parallax lives on the .hero-visual__hud wrapper above;
+   this element owns its own transform (the float bob) so the two never
+   fight over the same CSS property. */
+.hero-glass-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: fit-content;
+  padding: 0.85em 1.2em;
+  border-radius: 999px;
+  background: linear-gradient(155deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 12px 32px -8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  opacity: 0;
+  animation: floatCard 5s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+.hero-glass-card__row {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  width: fit-content;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  background: rgba(5,5,5,0.6);
-  border: 1px solid var(--border-subtle);
-  border-radius: 999px;
-  padding: 0.5em 0.9em;
-  backdrop-filter: blur(6px);
-  opacity: 0;
+  white-space: nowrap;
+}
+
+.hero-glass-card__value {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.hero-glass-card__divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,0.16);
+  flex-shrink: 0;
+}
+
+.hero-glass-card svg {
+  width: 13px; height: 13px;
+  color: var(--yellow-500);
+  flex-shrink: 0;
 }
 
 .hud-chip__dot {
@@ -768,6 +829,10 @@ h1, h2, h3, .font-display {
   background: var(--success);
   box-shadow: 0 0 8px var(--success);
   flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glass-card { animation: none; }
 }
 
 /* Cursor-following spotlight (desktop only, applied via JS on pointer:fine) */
@@ -786,6 +851,7 @@ h1, h2, h3, .font-display {
   .hero-svg-reticle,
   .hero-svg-eq rect { animation: none; }
   .hero-visual__reveal { clip-path: none; transform: none; }
+  .hero-flash { display: none; }
 }
 
 /* ==========================================================================
@@ -1228,6 +1294,7 @@ h1, h2, h3, .font-display {
   background: var(--black-950);
   color: var(--text-primary);
 }
+.cta-band .btn-primary::before { display: none; }
 .cta-band .btn-primary:hover {
   background: var(--black-800);
   box-shadow: 0 8px 30px -8px rgba(0,0,0,0.4);
@@ -1355,7 +1422,7 @@ h1, h2, h3, .font-display {
     transition: none !important;
   }
   .hero-title .word,
-  .hero-eyebrow, .hero-sub, .hero-actions, .hero-meta, .hero-scroll-cue {
+  .hero-eyebrow, .hero-sub, .hero-actions, .hero-meta, .hero-scroll-cue, .hero-glass-card {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;

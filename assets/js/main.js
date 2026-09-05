@@ -121,7 +121,8 @@
   var heroAnimTargets = document.querySelectorAll('[data-anim]');
   var heroReveal = document.querySelector('[data-hero-reveal]');
   var metaItems = document.querySelectorAll('.hero-meta__item');
-  var hudChips = document.querySelectorAll('.hud-chip');
+  var glassCard = document.querySelector('[data-glass-card]');
+  var heroFlash = document.querySelector('.hero-flash');
   var HERO_CLIP_VISIBLE = 'circle(150% at 68% 38%)';
 
   function revealHeroInstantly() {
@@ -130,7 +131,8 @@
       w.style.opacity = '1'; w.style.filter = 'none'; w.style.transform = 'none';
     });
     metaItems.forEach(function (i) { i.style.opacity = '1'; i.style.transform = 'none'; });
-    hudChips.forEach(function (c) { c.style.opacity = '1'; c.style.transform = 'none'; });
+    if (glassCard) glassCard.style.opacity = '1';
+    if (heroFlash) heroFlash.style.opacity = '0';
     if (heroReveal) {
       heroReveal.style.clipPath = HERO_CLIP_VISIBLE;
       heroReveal.style.transform = 'none';
@@ -143,24 +145,33 @@
     var words = document.querySelectorAll('.hero-title .word');
     var tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    gsap.set(words, { opacity: 0, y: '0.75em', filter: 'blur(16px)' });
+    gsap.set(words, { opacity: 0, y: '0.75em', rotationX: -55, filter: 'blur(16px)' });
     gsap.set('.hero-eyebrow, .hero-sub, .hero-actions, .hero-scroll-cue', { opacity: 0, y: 18 });
     gsap.set(metaItems, { opacity: 0, y: 14 });
-    gsap.set(hudChips, { opacity: 0, y: 10 });
+    if (glassCard) gsap.set(glassCard, { opacity: 0 });
     if (heroReveal) gsap.set(heroReveal, { clipPath: 'circle(0% at 68% 38%)', scale: 1.12 });
 
-    tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5 });
-
-    if (heroReveal) {
-      tl.to(heroReveal, { clipPath: HERO_CLIP_VISIBLE, scale: 1, duration: 2.1, ease: 'power3.out' }, '-=0.15');
+    /* Power-on flash punctuates the very start, then the radial-mask
+       reveal and headline cascade play over it. */
+    if (heroFlash) {
+      tl.fromTo(heroFlash, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: 'power1.in' }, 0)
+        .to(heroFlash, { opacity: 0, duration: 0.7, ease: 'power2.out' }, 0.12);
     }
 
-    tl.to(words, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, stagger: 0.09 }, '-=1.7')
+    tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5 }, 0.1);
+
+    if (heroReveal) {
+      tl.to(heroReveal, { clipPath: HERO_CLIP_VISIBLE, scale: 1, duration: 2.1, ease: 'power3.out' }, '-=0.05');
+    }
+
+    tl.to(words, { opacity: 1, y: 0, rotationX: 0, filter: 'blur(0px)', duration: 0.9, stagger: 0.09 }, '-=1.7')
       .to('.hero-sub', { opacity: 1, y: 0, duration: 0.6 }, '-=0.55')
       .to('.hero-actions', { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
-      .to(metaItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.08 }, '-=0.3')
-      .to(hudChips, { opacity: 1, y: 0, duration: 0.5, stagger: 0.15 }, '-=0.5')
-      .to('.hero-scroll-cue', { opacity: 1, y: 0, duration: 0.5 }, '-=0.3');
+      .to(metaItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.08 }, '-=0.3');
+
+    if (glassCard) tl.to(glassCard, { opacity: 1, duration: 0.6 }, '-=0.5');
+
+    tl.to('.hero-scroll-cue', { opacity: 1, y: 0, duration: 0.5 }, '-=0.3');
   }
 
   /* Safety net: if hero content is still hidden after 3s (slow network,
@@ -190,6 +201,14 @@
       };
     });
 
+    /* 3D cursor-tilt on the hero visual card — the same element already
+       animates clip-path/scale for its entrance reveal; GSAP composes
+       rotationX/rotationY/scale/x/y on one element without conflict as
+       long as nothing outside GSAP also touches its transform. */
+    var tiltCard = document.querySelector('[data-hero-reveal]');
+    var tiltSetX = tiltCard ? gsap.quickTo(tiltCard, 'rotationY', { duration: 0.7, ease: 'power3.out' }) : null;
+    var tiltSetY = tiltCard ? gsap.quickTo(tiltCard, 'rotationX', { duration: 0.7, ease: 'power3.out' }) : null;
+
     heroSection.addEventListener('mousemove', function (e) {
       var rect = heroSection.getBoundingClientRect();
       var nx = (e.clientX - rect.left) / rect.width - 0.5;
@@ -199,6 +218,11 @@
         item.setX(nx * item.strength);
         item.setY(ny * item.strength);
       });
+
+      if (tiltSetX && tiltSetY) {
+        tiltSetX(nx * 12);
+        tiltSetY(ny * -10);
+      }
 
       if (spotlight) {
         var px = ((e.clientX - rect.left) / rect.width) * 100;
@@ -215,6 +239,7 @@
     heroSection.addEventListener('mouseleave', function () {
       if (spotlight) spotlight.classList.remove('is-active');
       parallaxSetters.forEach(function (item) { item.setX(0); item.setY(0); });
+      if (tiltSetX && tiltSetY) { tiltSetX(0); tiltSetY(0); }
     });
 
     /* Magnetic CTAs */
@@ -243,8 +268,16 @@
      Smooth scroll-driven transition from hero into the next section
      ------------------------------------------------------------------ */
   if (hasScrollTrigger && !reduceMotion) {
-    var heroVisualEl = document.querySelector('.hero-visual');
-    var heroContentEl = document.querySelector('.hero-content');
+    /* Targets deliberately avoid .hero-content and .hero-visual (the outer
+       wrapper) — both already carry continuous mouse-parallax/tilt tweens
+       on x/y/rotation, and a second GSAP tween fighting the same element's
+       property from scroll input would jitter if a user scrolls while
+       moving the mouse. .hero .container and .hero-visual__reveal are
+       untouched by the interactive layer, so the scroll-exit owns them
+       exclusively. */
+    var heroContainerEl = document.querySelector('.hero .container');
+    var heroVisualCardEl = document.querySelector('.hero-visual__reveal');
+    var heroVignetteEl = document.querySelector('.hero-scene__vignette');
 
     gsap.timeline({
       scrollTrigger: {
@@ -254,8 +287,9 @@
         scrub: 0.6
       }
     })
-      .to(heroContentEl, { y: -70, opacity: 0.25, ease: 'none' }, 0)
-      .to(heroVisualEl, { y: 50, scale: 1.06, opacity: 0.3, ease: 'none' }, 0);
+      .to(heroContainerEl, { y: -90, opacity: 0, filter: 'blur(6px)', ease: 'none' }, 0)
+      .to(heroVisualCardEl, { y: 60, scale: 1.15, opacity: 0, filter: 'blur(4px)', ease: 'none' }, 0)
+      .to(heroVignetteEl, { opacity: 1.6, ease: 'none' }, 0);
   }
 
   document.body.classList.remove('js-loading');
