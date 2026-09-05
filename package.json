@@ -1,0 +1,22 @@
+{
+  "name": "baza-mokotow",
+  "version": "1.0.0",
+  "description": "Static, dependency-light landing page (plain HTML/CSS/JS, no build step). Open `index.html` directly or serve the folder with any static file server.",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muratovyan4-spec/baza-mokotow.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/muratovyan4-spec/baza-mokotow/issues"
+  },
+  "homepage": "https://github.com/muratovyan4-spec/baza-mokotow#readme",
+  "dependencies": {
+    "gsap": "3.12.5"
+  },
+  "notes": "gsap is vendored into assets/js/vendor/ (self-hosted, no CDN dependency) — see README.md."
+}

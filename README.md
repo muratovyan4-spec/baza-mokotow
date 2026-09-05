@@ -52,24 +52,47 @@ replacement, not a rebuild.
 - **Type**: Anton (display/headlines) + Inter (body/UI) + JetBrains Mono
   (technical labels, stats, HUD-style details) — chosen via the UI/UX Pro Max
   skill for an aggressive-but-premium cyber-gaming tone.
-- **Motion**: GSAP-driven cinematic hero entrance (word-by-word reveal,
-  fade+blur, staggered UI), IntersectionObserver-based scroll reveals for
-  every other section. Respects `prefers-reduced-motion` throughout, and
-  degrades gracefully to a fully visible static page if GSAP/CDN fails to
-  load (see `assets/js/main.js`).
+- **Motion**: GSAP-driven cinematic hero sequence — the hero visual (a
+  stylized HUD/monitor SVG, standing in for real BAZA photography) reveals
+  through an expanding radial mask with a Ken Burns zoom, while the headline
+  cascades in word-by-word with blur-to-sharp + upward motion, followed by
+  staggered CTA/stat/HUD-chip reveals. On desktop (fine pointer, no
+  `prefers-reduced-motion`), the hero also has a cursor-following spotlight,
+  multi-layer mouse parallax (background/image/UI move at different
+  strengths), and magnetic CTA buttons; scrolling out of the hero drives a
+  smooth parallax/fade transition into the next section via ScrollTrigger.
+  Every other section still uses IntersectionObserver scroll reveals.
+  Touch/coarse-pointer devices automatically skip the hover-only effects
+  (spotlight/parallax/magnetic) but keep the full entrance animation.
+  Respects `prefers-reduced-motion` throughout (all of the above is skipped
+  and content renders in its final state immediately), and degrades
+  gracefully to a fully visible static page if GSAP fails to load for any
+  reason. See `assets/js/main.js`.
+- GSAP is **self-hosted** in `assets/js/vendor/` (installed via `npm i
+  gsap@3.12.5`, see `package.json`) rather than loaded from a CDN — this
+  environment's network policy blocks cdnjs.cloudflare.com, and self-hosting
+  is more robust for production anyway (no third-party CDN dependency/outage
+  risk). To update GSAP: bump the version in `package.json`, `npm install`,
+  then copy `node_modules/gsap/dist/{gsap.min.js,ScrollTrigger.min.js}` into
+  `assets/js/vendor/`.
 - All tokens live in `:root` in `assets/css/style.css`.
 
 ## Structure
 
 ```
-index.html            Single-page markup, all sections
-assets/css/style.css   Design tokens + all styling
-assets/js/main.js      Nav, scroll reveals, hero animation, sticky CTA
+index.html                 Single-page markup, all sections
+assets/css/style.css        Design tokens + all styling
+assets/js/main.js           Nav, scroll reveals, hero animation, parallax,
+                             spotlight, magnetic CTAs, sticky CTA
+assets/js/vendor/            Self-hosted GSAP + ScrollTrigger
 ```
 
 ## Notes
 
 - The location map uses a free OpenStreetMap embed (no API key). Swap for
   Google Maps if you prefer once you have a Maps API key.
-- Tested responsive at 375/390/768/1024/1440px and with reduced motion via
-  Playwright + Chromium.
+- Tested responsive at 375/390/768/1024/1240/1440px, with
+  `prefers-reduced-motion`, and with touch/coarse-pointer emulation, via
+  Playwright + Chromium — including verifying the hero's radial-mask reveal,
+  word-by-word blur-to-sharp cascade, mouse parallax, cursor spotlight, and
+  magnetic CTA buttons actually animate (not just that the code exists).

@@ -76,15 +76,111 @@
      ========================================================================== -->
 <section class="hero" id="top">
   <div class="hero-scene" aria-hidden="true">
-    <div class="hero-scene__grid"></div>
-    <div class="hero-scene__glow"></div>
-    <div class="hero-scene__glow hero-scene__glow--secondary"></div>
+    <div class="hero-scene__grid" data-parallax data-parallax-strength="8"></div>
+    <div class="hero-scene__glow-wrap" data-parallax data-parallax-strength="16">
+      <div class="hero-scene__glow"></div>
+    </div>
+    <div class="hero-scene__glow-wrap" data-parallax data-parallax-strength="12">
+      <div class="hero-scene__glow hero-scene__glow--secondary"></div>
+    </div>
     <div class="hero-scene__scanline"></div>
-    <div class="hero-scene__vignette"></div>
   </div>
 
+  <!-- Hero visual: stylized HUD/monitor illustration standing in for real BAZA
+       photography (still unavailable — see README.md). Vector, not a photo,
+       so it makes no claim about the real space; gets the cinematic
+       radial-mask reveal + Ken Burns zoom + parallax treatment. -->
+  <div class="hero-visual" data-parallax data-parallax-strength="24" aria-hidden="true">
+    <div class="hero-visual__reveal" data-hero-reveal>
+      <svg class="hero-visual__svg" viewBox="0 0 640 860" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="ambientGlow" cx="50%" cy="42%" r="60%">
+            <stop offset="0%" stop-color="#ffd400" stop-opacity="0.35"/>
+            <stop offset="55%" stop-color="#ffd400" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#ffd400" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#161616"/>
+            <stop offset="100%" stop-color="#0a0a0a"/>
+          </linearGradient>
+          <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="48%" stop-color="#fff" stop-opacity="0.06"/>
+            <stop offset="52%" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="18"/>
+          </filter>
+        </defs>
+
+        <ellipse cx="320" cy="360" rx="300" ry="340" fill="url(#ambientGlow)" filter="url(#softBlur)"/>
+
+        <!-- corner ticks -->
+        <g stroke="#ffd400" stroke-opacity="0.5" stroke-width="2">
+          <path d="M40 70 v-20 h20"/>
+          <path d="M600 70 v-20 h-20"/>
+          <path d="M40 790 v20 h20"/>
+          <path d="M600 790 v20 h-20"/>
+        </g>
+
+        <!-- monitor panel -->
+        <rect x="60" y="40" width="520" height="780" rx="28" fill="url(#panelGrad)" stroke="#ffd400" stroke-opacity="0.35" stroke-width="1.5"/>
+        <rect x="60" y="40" width="520" height="780" rx="28" fill="url(#sheen)"/>
+
+        <!-- screen -->
+        <rect x="92" y="72" width="456" height="430" rx="16" fill="#050505" stroke="#2a2a2a"/>
+
+        <g class="hero-svg-reticle" style="transform-origin: 320px 287px;">
+          <circle cx="320" cy="287" r="88" stroke="#ffd400" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="3 7"/>
+          <circle cx="320" cy="287" r="50" stroke="#ffd400" stroke-opacity="0.8" stroke-width="1.5"/>
+          <path d="M320 219v24M320 331v24M252 287h24M364 287h24" stroke="#ffd400" stroke-opacity="0.6" stroke-width="1.5"/>
+        </g>
+        <circle cx="320" cy="287" r="5" fill="#ffd400"/>
+
+        <!-- equalizer bars -->
+        <g class="hero-svg-eq" fill="#ffd400">
+          <rect x="112" y="440" width="12" height="30" opacity="0.35"/>
+          <rect x="134" y="410" width="12" height="60" opacity="0.5"/>
+          <rect x="156" y="380" width="12" height="90" opacity="0.3"/>
+          <rect x="178" y="424" width="12" height="46" opacity="0.6"/>
+          <rect x="200" y="398" width="12" height="72" opacity="0.4"/>
+          <rect x="222" y="368" width="12" height="102" opacity="0.75"/>
+          <rect x="244" y="416" width="12" height="54" opacity="0.45"/>
+          <rect x="266" y="388" width="12" height="82" opacity="0.6"/>
+        </g>
+
+        <!-- keyboard -->
+        <rect x="92" y="528" width="456" height="110" rx="12" fill="#0d0d0d" stroke="#2a2a2a"/>
+        <g>
+          <rect x="112" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="150" y="550" width="30" height="16" rx="3" fill="#ffd400" fill-opacity="0.85"/>
+          <rect x="188" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="226" y="550" width="30" height="16" rx="3" fill="#ffd400" fill-opacity="0.6"/>
+          <rect x="264" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="302" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="340" y="550" width="30" height="16" rx="3" fill="#ffd400" fill-opacity="0.6"/>
+          <rect x="378" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="416" y="550" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.06"/>
+          <rect x="182" y="584" width="196" height="18" rx="4" fill="#ffffff" fill-opacity="0.06"/>
+        </g>
+
+        <!-- desk edge -->
+        <path d="M60 700 L580 700" stroke="#2a2a2a" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <div class="hero-visual__hud" data-parallax data-parallax-strength="36">
+      <span class="hud-chip"><span class="hud-chip__dot"></span>SYSTEM · ONLINE</span>
+      <span class="hud-chip">BAZA://MOKOTÓW</span>
+    </div>
+  </div>
+
+  <div class="hero-scene__vignette" aria-hidden="true"></div>
+  <div class="hero-spotlight" data-spotlight aria-hidden="true"></div>
+
   <div class="container">
-    <div class="hero-content">
+    <div class="hero-content" data-parallax data-parallax-strength="-4">
       <p class="eyebrow hero-eyebrow" data-anim="hero-eyebrow">Warszawa · Mokotów · Premium Gaming Club</p>
 
       <h1 class="hero-title font-display" data-anim="hero-title">
@@ -103,11 +199,11 @@
       </p>
 
       <div class="hero-actions" data-anim="hero-actions">
-        <a class="btn btn-primary" href="https://clxb.ee/BAZA_Mokotow" target="_blank" rel="noopener">
+        <a class="btn btn-primary" href="https://clxb.ee/BAZA_Mokotow" target="_blank" rel="noopener" data-magnetic>
           Zarezerwuj stanowisko
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a class="btn btn-secondary" href="#strefa">Zobacz bazę</a>
+        <a class="btn btn-secondary" href="#strefa" data-magnetic>Zobacz bazę</a>
       </div>
 
       <div class="hero-meta" data-anim="hero-meta">
@@ -407,7 +503,7 @@
     <p class="eyebrow" style="color:rgba(10,10,10,0.6)" data-reveal>Gotowy na sesję?</p>
     <h2 class="font-display" data-reveal>Zarezerwuj stanowisko w BAZIE</h2>
     <p data-reveal>Wybierz termin online — Twoje stanowisko czeka na Wincentego Rzymowskiego 34 na Mokotowie.</p>
-    <a class="btn btn-primary" href="https://clxb.ee/BAZA_Mokotow" target="_blank" rel="noopener" data-reveal>
+    <a class="btn btn-primary" href="https://clxb.ee/BAZA_Mokotow" target="_blank" rel="noopener" data-reveal data-magnetic>
       Zarezerwuj stanowisko
       <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
@@ -468,8 +564,8 @@
   <a class="btn btn-primary" href="https://clxb.ee/BAZA_Mokotow" target="_blank" rel="noopener">Zarezerwuj stanowisko</a>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="assets/js/vendor/gsap.min.js"></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
